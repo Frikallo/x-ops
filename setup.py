@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-  name = 'x-ops',
+  name = 'xops',
   packages = find_packages(exclude=['examples']),
-  version = '0.0.1',
+  version = '0.0.0',
   license='MIT',
   description = 'X-Transformers - Pytorch',
   author = 'Noah Kay',
@@ -12,12 +12,12 @@ setup(
   long_description_content_type = 'text/markdown',
   keywords = [
     'artificial intelligence',
-    'attention mechanism',
-    'transformers'
+    'deep learning',
+    'tensor operations',
+    'einstein notation',
+    'fast operations',
   ],
   install_requires=[
-    'torch>=1.6',
-    'einops>=0.7.0'
   ],
   classifiers=[
     'Development Status :: 4 - Beta',
