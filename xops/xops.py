@@ -1,6 +1,7 @@
 from typing import List, Union, Dict, Tuple, TypeVar, Any
 from functools import reduce, lru_cache
 from .parsing import ParsedExpression
+from ._backends import get_backend
 from itertools import islice
 
 Tensor = TypeVar("Tensor")
@@ -77,11 +78,12 @@ def create_permutation_indices(shape: Tuple[int, ...], left_expr: Tuple[Tuple[Un
     return permutation_indices
 
 def xrearrange(tensor: Tensor, pattern: str) -> Tensor:
+    tensor = get_backend(tensor)
     left, right = pattern.split('->')
     
     # Parsing and mapping expression only once
-    left_parsed_expr = ParsedExpression(left).composition
-    right_parsed_expr = ParsedExpression(right).composition
+    left_parsed_expr = tuple(map(tuple, ParsedExpression(left).composition))
+    right_parsed_expr = tuple(map(tuple, ParsedExpression(right).composition))
 
     left_expr = tuple(map(tuple, left_parsed_expr))
     right_expr = tuple(map(tuple, right_parsed_expr))
@@ -108,7 +110,7 @@ def xrearrange(tensor: Tensor, pattern: str) -> Tensor:
     flattened_output_shape = [dim for symbol in output_shape for dim in (symbol if isinstance(symbol, list) else [symbol])]
 
     permutation = create_permutation_indices(tuple(tensor.shape), left_expr, right_expr_flat)
-    return tensor.permute(*permutation).reshape(*flattened_output_shape)
+    return tensor.permute(permutation).reshape(*flattened_output_shape)
 
 def xreduce(tensor: Tensor, pattern: str, reduction: str, **reduction_kwargs) -> Tensor:
     left, right = pattern.split('->')

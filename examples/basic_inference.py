@@ -5,10 +5,10 @@ from time import perf_counter
 
 device = torch.device('mps')
 
-tensor1 = torch.ones(1, 1, 1, 1).to(device)
+tensor1 = torch.ones(32, 128, 1024, 1).to(device)
 
 start = perf_counter()
-tensor1a = xrearrange(tensor1, '...->...')
+tensor1a = xrearrange(tensor1, '... A -> A ...')
 print(tensor1a.shape)
 end = perf_counter()
 print(f'xrearrange took {end - start:.6f} seconds')

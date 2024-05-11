@@ -3,14 +3,19 @@ from typing import List, Union
 import re
 
 class ParsedExpression:
+    _pattern = re.compile(r'[a-zA-Z…_\d]+|\([a-zA-Z…_\d ]+\)')
+
     def __init__(self, notation: str):
-        self.pattern = re.compile(r'[a-zA-Z…_\d+]+|\([a-zA-Z…_\d+ ]+\)')
+        notation = notation.replace('...', '…')
+        self._validate(notation)
         self.composition = self._parse(notation)
 
-    def _check(self, match: List[str]) -> List[str]:
+    @staticmethod
+    def _check(match: List[str]) -> List[str]:
         return [f"{m}-axis" if m.isdigit() else m for m in match]
 
-    def _validate(self, notation: str) -> None:
+    @staticmethod
+    def _validate(notation: str) -> None:
         count_paren_open = notation.count('(')
         count_paren_close = notation.count(')')
         count_dots = notation.count('.')
@@ -28,11 +33,8 @@ class ParsedExpression:
                 raise XOpsError("Nested parentheses are not allowed.")
 
     def _parse(self, notation: str) -> List[List[Union[str]]]:
-        notation = notation.replace('...', '…')
-        self._validate(notation)
-
-        matches = self.pattern.findall(notation)
-        parsed: List[List[Union[str]]] = [
+        matches = self._pattern.findall(notation)
+        parsed = [
             self._check(match[1:-1].split()) if match.startswith('(') and match.endswith(')')
             else self._check([match])
             for match in matches
